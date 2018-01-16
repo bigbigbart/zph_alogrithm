@@ -62,12 +62,13 @@ end
 
 local function get_straight(dict, value)
 	-- 找普通顺子
+	 -- 10 没有单独处理
 	local straight = {}
 	if dict[value - 2] and dict[value - 1] and dict[value] then -- 123
 		table.insert(straight, {value - 2, value - 1, value})
-	elseif dict[value - 1] and dict[value] and dict[value + 1] then -- 234
+	elseif value ~= 10 and dict[value - 1] and dict[value] and dict[value + 1] then -- 234
 		table.insert(straight, {value - 1, value, value + 1})
-	elseif dict[value] and dict[value + 1] and dict[value + 2] then  --345
+	elseif value%10 < 9 and dict[value] and dict[value + 1] and dict[value + 2] then  --345
 		table.insert(straight, {value, value + 1, value + 2})
 	end
 	-- 找2710
