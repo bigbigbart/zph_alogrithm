@@ -62,13 +62,16 @@ end
 
 local function get_straight(dict, value)
 	-- 找普通顺子
-	 -- 10 没有单独处理
 	local straight = {}
+	if dict[value] == 3 then
+		table.insert(straight, {value, value, value})
+	end
+	
 	if dict[value - 2] and dict[value - 1] and dict[value] then -- 123
 		table.insert(straight, {value - 2, value - 1, value})
-	elseif value ~= 10 and dict[value - 1] and dict[value] and dict[value + 1] then -- 234
+	elseif dict[value - 1] and dict[value] and dict[value + 1] then -- 234
 		table.insert(straight, {value - 1, value, value + 1})
-	elseif value%10 < 9 and dict[value] and dict[value + 1] and dict[value + 2] then  --345
+	elseif dict[value] and dict[value + 1] and dict[value + 2] then  --345
 		table.insert(straight, {value, value + 1, value + 2})
 	end
 	-- 找2710
@@ -104,7 +107,7 @@ do_check_hu = function (hu_result_tbl, hu_ret, hand_dict, hand_pairs)
 		local pairs_tbl = table.copy(hand_pairs)
 		for i, pairs_card in ipairs(pairs_tbl) do
 			local _dict = table.copy(dict)
-			_dict[pairs_card] = nil
+			_dict[pairs_card] = _dict[pairs_card] - 2
 			hu_result_tbl.duizi = {pairs_card, pairs_card}
 			hu_ret = {}
 			do_check_hu(hu_result_tbl, hu_ret, _dict, false)
@@ -133,17 +136,19 @@ local function check (hand_tbl)
 		end
 		if #hand_tbl % 3 == 2 then
 			for card, count in pairs(hand_dict) do
-				if count == 2 then
+				if count >= 2 then
+					hand_dict[card] = hand_dict[card] - 2
 					table.insert(hand_pairs, card)
 				end
 			end
 		end
 		do_check_hu(hu_result_tbl, hu_ret, hand_dict, hand_pairs)
-		print("cur hu_result_tbl is : %s", table.dump(hu_result_tbl))
+		print("hu_result_tbl====>>>>"..table.dump(hu_result_tbl))
 	else
 		return hu_result_tbl
 	end
 end
 
-local tbl = {1, 2, 3, 20, 20, 15, 15, 16, 16, 17, 17}
+--local tbl = {3, 3, 3, 4, 5,} -- 
+local tbl = {3, 3, 3, 4, 4, 5, 5, 6, 6} -- 最后摸一张
 check(tbl)
